@@ -36,6 +36,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 		return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
 	}
 	
+	@ExceptionHandler(InternalServerException.class)
+	public ResponseEntity<ErrorObject> handleExpenseInternalServerException(InternalServerException ex, WebRequest request) {
+		
+		ErrorObject errorObject = new ErrorObject();
+		
+		errorObject.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		
+		errorObject.setMessage(ex.getMessage());
+		
+		errorObject.setTimestamp(new Date());
+		
+		return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public ResponseEntity<ErrorObject> handleMethodArgumentMismatchException(MethodArgumentTypeMismatchException ex, WebRequest request) {
 		
