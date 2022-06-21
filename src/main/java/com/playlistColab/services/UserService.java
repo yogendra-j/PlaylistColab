@@ -4,6 +4,8 @@ package com.playlistColab.services;
 import java.util.List;
 import java.util.Optional;
 
+import javax.security.auth.x500.X500Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,11 +13,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.playlistColab.dtos.JwtAuthenticationResponse;
 import com.playlistColab.entities.User;
 import com.playlistColab.exceptions.ItemExistsException;
 import com.playlistColab.repositories.UserRepository;
 import com.playlistColab.utils.JwtUtil;
 
+import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -28,10 +32,9 @@ public class UserService {
     @Autowired private JwtUtil tokenProvider;
 
 
-    public String loginUser(String username, String password) {
+    public JwtAuthenticationResponse loginUser(String username, String password) {
        Authentication authentication = authenticationManager
                .authenticate(new UsernamePasswordAuthenticationToken(username, password));
-
        return tokenProvider.generateToken(authentication);
     }
 

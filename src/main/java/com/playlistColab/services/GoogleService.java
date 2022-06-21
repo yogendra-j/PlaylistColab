@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.playlistColab.dtos.GoogleUser;
+import com.playlistColab.dtos.JwtAuthenticationResponse;
 import com.playlistColab.entities.User;
 import com.playlistColab.exceptions.InternalServerException;
 import com.playlistColab.utils.JwtUtil;
@@ -27,7 +28,7 @@ public class GoogleService {
 
     private final String GOOGLE_API_BASE = "https://oauth2.googleapis.com/tokeninfo?id_token=";
 
-    public String loginUser(String accessToken) {
+    public JwtAuthenticationResponse loginUser(String accessToken) {
         var googleUser = getGoogleUser(accessToken);
 
         return userService.findByEmail(googleUser.getEmail())

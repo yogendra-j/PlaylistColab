@@ -34,15 +34,15 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        String token = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+    	JwtAuthenticationResponse token = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping(path = "/google/signin", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public  ResponseEntity<?> facebookAuth(GoogleLoginDto googleLoginRequest) {
         log.info("facebook login {}", googleLoginRequest);
-        String token = googleService.loginUser(googleLoginRequest.getAccessToken());
-        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+        JwtAuthenticationResponse token = googleService.loginUser(googleLoginRequest.getAccessToken());
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)

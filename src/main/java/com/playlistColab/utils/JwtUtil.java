@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.playlistColab.dtos.JwtAuthenticationResponse;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -26,16 +28,16 @@ public class JwtUtil {
 	@Value("${jwt.secret}")
 	private String secret;
 
-	public String generateToken(Authentication userDetails) {
+	public JwtAuthenticationResponse generateToken(Authentication userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		
-		return Jwts.builder()
+		return new JwtAuthenticationResponse(Jwts.builder()
 			.setClaims(claims)
 			.setSubject(userDetails.getName())
 			.setIssuedAt(new Date(System.currentTimeMillis()))
 			.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
 			.signWith(SignatureAlgorithm.HS512, secret)
-			.compact();
+			.compact(), JWT_TOKEN_VALIDITY);
 	}
 	
 	
