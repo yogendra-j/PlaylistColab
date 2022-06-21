@@ -4,8 +4,6 @@ package com.playlistColab.services;
 import java.util.List;
 import java.util.Optional;
 
-import javax.security.auth.x500.X500Principal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
