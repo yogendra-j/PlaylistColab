@@ -17,8 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.playlistColab.services.CustomUserDetailsService;
 import com.playlistColab.utils.JwtUtil;
 
-import io.jsonwebtoken.Claims;
-
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtConfig;

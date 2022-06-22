@@ -17,7 +17,6 @@ import com.playlistColab.exceptions.ItemExistsException;
 import com.playlistColab.repositories.UserRepository;
 import com.playlistColab.utils.JwtUtil;
 
-import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
