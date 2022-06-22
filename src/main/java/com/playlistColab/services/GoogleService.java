@@ -15,10 +15,7 @@ import com.playlistColab.entities.User;
 import com.playlistColab.exceptions.InternalServerException;
 import com.playlistColab.utils.JwtUtil;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
-@Slf4j
 public class GoogleService {
 
     @Autowired private UserService userService;
