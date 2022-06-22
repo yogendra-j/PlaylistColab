@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.playlistColab.entities.Playlist;
 import com.playlistColab.entities.User;
+import com.playlistColab.exceptions.ResourceNotFoundException;
 import com.playlistColab.repositories.PlaylistRepository;
 
 @Service
@@ -25,4 +26,9 @@ public class PlaylistService {
 	public List<Playlist> findByUserId(long userId) {
 		return playlistRepository.findByUserId(userId);
 	}
+
+	public Playlist findById(long playlistId) {
+		return playlistRepository.findById(playlistId)
+				.orElseThrow(() -> new ResourceNotFoundException("Playlist with id " + playlistId + " not found."));
+			}
 }
