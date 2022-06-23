@@ -12,7 +12,7 @@ import com.playlistColab.services.youtubeService;
 public class youtubeHelperController {
     
     @Autowired youtubeService youtubeService;
-    @GetMapping("/youtube/getsongs/{playlistId}")
+    @GetMapping("/youtube/{playlistId}")
     public ResponseEntity<?> getSongsList(@PathVariable("playlistId") String playlistId) {
         
         return ResponseEntity.ok(youtubeService.getSongsList(playlistId));
