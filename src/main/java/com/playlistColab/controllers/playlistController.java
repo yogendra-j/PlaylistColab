@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.playlistColab.dtos.AddSongDto;
 import com.playlistColab.dtos.ApiResponse;
 import com.playlistColab.dtos.PlaylistCreateDto;
 import com.playlistColab.entities.User;
@@ -65,6 +66,13 @@ public class playlistController {
     @GetMapping(value = "/playlists/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getPlaylistById(@PathVariable long id) {
         log.info("retrieving playlist with id {}", id);
+        return ResponseEntity
+                .ok(playlistService.findById(id));
+    }
+
+    @PostMapping(value = "/playlists/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> addSongsToPlaylist(@PathVariable long id, @Valid @RequestBody AddSongDto songsList) {
+        log.info("saving songs in playlist with id {}", id);
         return ResponseEntity
                 .ok(playlistService.findById(id));
     }

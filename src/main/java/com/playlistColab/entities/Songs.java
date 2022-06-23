@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -34,6 +34,6 @@ public class Songs {
 	@Size(max = 255, min = 10)
 	private String youtubeId;
 	
-	@OneToMany(mappedBy = "song")
-    Set<PlaylistSongMapping> playlistSongMappings;
+	@ManyToMany(mappedBy = "playlists")
+    Set<Playlist> playlists;
 }
