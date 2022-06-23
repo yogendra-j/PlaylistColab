@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddSongDto {
-    private List<String> songIds;
+    private List<SongGetDto> songs;
     private SongProviderEnum songProvider;
 }

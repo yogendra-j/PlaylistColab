@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.playlistColab.entities.Songs;
+import com.playlistColab.entities.Song;
 
-public interface SongRepository extends JpaRepository<Songs, Long>{
-    List<Songs> findAllByYoutubeId(Iterable<String> youtubeId);
+public interface SongRepository extends JpaRepository<Song, String>{
+    // List<Song> findSongsByPlaylistsId(long playlistId);
 }

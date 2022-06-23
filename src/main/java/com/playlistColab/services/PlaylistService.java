@@ -1,6 +1,8 @@
 package com.playlistColab.services;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.playlistColab.dtos.AddSongDto;
 import com.playlistColab.entities.Playlist;
-import com.playlistColab.entities.Songs;
+import com.playlistColab.entities.Song;
 import com.playlistColab.entities.User;
 import com.playlistColab.exceptions.ResourceNotFoundException;
 import com.playlistColab.repositories.PlaylistRepository;
@@ -20,7 +22,6 @@ public class PlaylistService {
 	PlaylistRepository playlistRepository;
 	@Autowired
 	SongRepository songRepository;
-	@Autowired
 
 	public long createPlaylist(String playlistName, long userId) {
 		Playlist playlist = Playlist
@@ -44,15 +45,19 @@ public class PlaylistService {
 		playlistRepository.deleteById(playlistId);
 	}
 
-	public void addSongToPlaylist(long playlistId, AddSongDto addSongDto) {
-		List<Songs> existingSongs = songRepository.findAllByYoutubeId(addSongDto.getSongIds());
-		List<Songs> songsNeededToAdd = addSongDto.getSongIds().stream().filter(videoId -> !existingSongs.stream()
-				.anyMatch(song -> song.getYoutubeId().equals(videoId))).map(videoId -> Songs.builder().youtubeId(videoId).build())
+	public Playlist addSongToPlaylist(long playlistId, AddSongDto addSongDto) {
+		List<Song> songsInDb = songRepository
+				.findAllById(addSongDto.getSongs().stream().map(s -> s.getVideoId()).collect(Collectors.toList()));
+		List<Song> songsNeededToAddInDb = addSongDto.getSongs().stream().filter(songdto -> !songsInDb.stream()
+				.anyMatch(song -> song.getId().equals(songdto.getVideoId()))).map(songdto -> Song.fromSongDto(songdto))
 				.collect(Collectors.toList());
-		List<Songs> songsAdded = songRepository.saveAll(songsNeededToAdd);
+		songsInDb.addAll(songRepository.saveAll(songsNeededToAddInDb)); //now all songs available in db
+		// Set<Song> songsInPlaylist = new HashSet<>();
+		// songsInPlaylist.addAll(songsInDb);
+		// songsInPlaylist.addAll(songRepository.findSongsByPlaylistsId(playlistId));
 		Playlist playlist = findById(playlistId);
-		playlist.getSongs().addAll(songsAdded);
-		playlistRepository.save(playlist);
+		playlist.getSongs().addAll(songsInDb);
+		return playlistRepository.save(playlist);
 	}
 
 }

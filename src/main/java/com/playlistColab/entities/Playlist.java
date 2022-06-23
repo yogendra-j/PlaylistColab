@@ -1,8 +1,10 @@
 package com.playlistColab.entities;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,6 +42,7 @@ public class Playlist {
 	private User user;
 
 	@ManyToMany
+	@Builder.Default
 	@JoinTable(name = "tbl_playlist_song", joinColumns = @JoinColumn(name = "playlist_id"), inverseJoinColumns = @JoinColumn(name = "song_id"))
-	Set<Songs> songs;
+	private Set<Song> songs = new HashSet<>();
 }
