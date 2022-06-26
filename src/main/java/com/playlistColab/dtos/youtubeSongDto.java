@@ -1,5 +1,7 @@
 package com.playlistColab.dtos;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,8 +23,12 @@ public class youtubeSongDto {
     public SongGetDto toSongGetDto() {
         return SongGetDto.builder()
                 .title(snippet.getTitle())
-                .thumbnailUrlLow(snippet.getThumbnails().getLowThumbnail().getUrl())
-                .thumbnailUrlMedium(snippet.getThumbnails().getMediumThumbnail().getUrl())
+                .thumbnailUrlLow(
+                        Optional.ofNullable(snippet.getThumbnails()).map(thumnail -> thumnail.getLowThumbnail())
+                                .map(lowThumnail -> lowThumnail.getUrl()).orElse(null))
+                .thumbnailUrlMedium(
+                        Optional.ofNullable(snippet.getThumbnails()).map(thumnail -> thumnail.getMediumThumbnail())
+                                .map(mediumThumnail -> mediumThumnail.getUrl()).orElse(null))
                 .videoId(snippet.getResourceId().getVideoId())
                 .build();
     }
