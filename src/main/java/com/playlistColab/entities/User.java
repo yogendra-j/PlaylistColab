@@ -56,6 +56,6 @@ public class User {
 	private String spotifyId;
 
 	@JsonIgnore
-	private Date spotifyAccessTokenExpiration;
+	private long spotifyAccessTokenExpiration;
 
 }

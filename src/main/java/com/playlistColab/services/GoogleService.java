@@ -1,6 +1,5 @@
 package com.playlistColab.services;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -37,7 +36,7 @@ public class GoogleService {
         return userService.findByEmail(googleUser.getEmail())
                 .or(() -> Optional.ofNullable(userService.registerUser(googleUser)))
                 .map(userDetails -> new UsernamePasswordAuthenticationToken(
-                        userDetails, null, new ArrayList<>()))
+                        userDetails.getEmail(), userDetails.getPassword()))
                 .map(tokenProvider::generateToken)
                 .orElseThrow(() ->
                         new InternalServerException("unable to login google email " + googleUser.getEmail()));
