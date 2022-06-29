@@ -35,4 +35,14 @@ public class SongGetDto {
                 .build();
     }
 
+    public static SongGetDto fromTracksSpotify(TracksSpotify tracksSpotify) {
+        int numberOfImages = tracksSpotify.getAlbum().getImages().size();
+        return SongGetDto.builder()
+                .title(tracksSpotify.getName())
+                .thumbnailUrlLow(tracksSpotify.getAlbum().getImages().get(numberOfImages - 1).getUrl())
+                .thumbnailUrlMedium(tracksSpotify.getAlbum().getImages().get(numberOfImages > 1 ? numberOfImages - 2 : 0).getUrl())
+                .videoId(tracksSpotify.getId())
+                .build();
+    }
+
 }
