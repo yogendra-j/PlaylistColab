@@ -2,8 +2,6 @@ package com.playlistColab.dtos;
 
 import java.io.Serializable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +13,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GoogleLoginDto implements Serializable {
 
-    @JsonProperty("access_token")
-    private String accessToken;
+    private String accessCode;
+    private String email;
+    private String name;
+    private String idToken;
+
 }

@@ -2,7 +2,6 @@ package com.playlistColab.controllers;
 
 
 import java.net.URI;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.playlistColab.dtos.ApiResponse;
-import com.playlistColab.dtos.GoogleLoginDto;
 import com.playlistColab.dtos.JwtAuthenticationResponse;
 import com.playlistColab.dtos.LoginRequest;
 import com.playlistColab.dtos.SignUpRequest;
@@ -37,10 +36,10 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
-    @PostMapping(path = "/google/signin", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public  ResponseEntity<?> facebookAuth(GoogleLoginDto googleLoginRequest) {
-        log.info("facebook login {}", googleLoginRequest);
-        JwtAuthenticationResponse token = googleService.loginUser(googleLoginRequest.getAccessToken());
+    @PostMapping(path = "/google/signin")
+    public  ResponseEntity<?> googleAuth(@RequestParam String idToken) {
+        log.info("google login {}", idToken);
+        JwtAuthenticationResponse token = googleService.loginUser(idToken);
         return ResponseEntity.ok(token);
     }
 

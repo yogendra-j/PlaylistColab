@@ -5,11 +5,12 @@ import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.playlistColab.dtos.GoogleUser;
 import com.playlistColab.dtos.JwtAuthenticationResponse;
 import com.playlistColab.entities.User;
 import com.playlistColab.exceptions.InternalServerException;
@@ -23,13 +24,18 @@ public class GoogleService {
 
     @Autowired private RestTemplate restTemplate;
 
-    private final String GOOGLE_API_BASE = "https://oauth2.googleapis.com/tokeninfo?id_token=";
+    @Value("${google.api.baseUrl}")
+    private String GOOGLE_API_BASE;
+    @Value("${google.clientId}")
+    private String googleClientId;
+    @Value("${google.clientSecret}")
+    private String googleClientSecret;
 
-    public JwtAuthenticationResponse loginUser(String accessToken) {
-        var googleUser = getGoogleUser(accessToken);
-
+    public JwtAuthenticationResponse loginUser(String idToken) {
+        User googleUser = getGoogleUser(idToken);
+        googleUser.setPassword(generatePassword(7));
         return userService.findByEmail(googleUser.getEmail())
-                .or(() -> Optional.ofNullable(userService.registerUser(convertTo(googleUser))))
+                .or(() -> Optional.ofNullable(userService.registerUser(googleUser)))
                 .map(userDetails -> new UsernamePasswordAuthenticationToken(
                         userDetails, null, new ArrayList<>()))
                 .map(tokenProvider::generateToken)
@@ -37,18 +43,12 @@ public class GoogleService {
                         new InternalServerException("unable to login google email " + googleUser.getEmail()));
     }
 
-    private User convertTo(GoogleUser googleUser) {
-        return User.builder()
-                .email(googleUser.getEmail())
-                .name(googleUser.getName())
-                .password(generatePassword(8))
-                .build();
-    }
+    public User getGoogleUser(String idToken) {
+        String access_token_url = GOOGLE_API_BASE;
+        access_token_url += "/tokeninfo?id_token=" + idToken;
+		ResponseEntity<User> response = restTemplate.getForEntity(access_token_url, User.class);
+        return response.getBody();
 
-    public GoogleUser getGoogleUser(String accessToken) {
-        var path = GOOGLE_API_BASE + accessToken;
-        return restTemplate
-                .getForObject(path, GoogleUser.class);
     }
 
     private String generatePassword(int length) {

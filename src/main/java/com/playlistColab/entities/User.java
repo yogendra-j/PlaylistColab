@@ -1,5 +1,7 @@
 package com.playlistColab.entities;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,5 +42,20 @@ public class User {
     @Size(min = 6, max = 255)
 	@JsonIgnore
 	private String password;
+
+	@Size(max = 255)
+	@JsonIgnore
+	private String spotifyAccessToken;
+
+	@Size(max = 255)
+	@JsonIgnore
+	private String spotifyRefreshToken;
+
+	@Size(max = 255)
+	@JsonIgnore
+	private String spotifyId;
+
+	@JsonIgnore
+	private Date spotifyAccessTokenExpiration;
 
 }
