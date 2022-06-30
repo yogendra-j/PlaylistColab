@@ -30,6 +30,7 @@ public class youtubeSongDto {
                         Optional.ofNullable(snippet.getThumbnails()).map(thumnail -> thumnail.getMediumThumbnail())
                                 .map(mediumThumnail -> mediumThumnail.getUrl()).orElse(null))
                 .videoId(snippet.getResourceId().getVideoId())
+                .songProvider(SongProviderEnum.YOUTUBE)
                 .build();
     }
 

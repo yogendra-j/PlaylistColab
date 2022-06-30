@@ -49,7 +49,7 @@ public class PlaylistService {
 		List<Song> songsNeededToAddInDb = addSongDto.getSongs().stream().filter(songdto -> !songsInDb.stream()
 				.anyMatch(song -> song.getId().equals(songdto.getVideoId()))).map(songdto -> Song.fromSongDto(songdto))
 				.collect(Collectors.toList());
-		songsInDb.addAll(songRepository.saveAll(songsNeededToAddInDb)); //now all songs available in db
+		songsInDb.addAll(songRepository.saveAllAndFlush(songsNeededToAddInDb)); //now all songs available in db
 		// Set<Song> songsInPlaylist = new HashSet<>();
 		// songsInPlaylist.addAll(songsInDb);
 		// songsInPlaylist.addAll(songRepository.findSongsByPlaylistsId(playlistId));

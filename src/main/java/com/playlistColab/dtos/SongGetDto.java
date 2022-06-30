@@ -20,6 +20,7 @@ public class SongGetDto {
     private String thumbnailUrlLow;
     private String thumbnailUrlMedium;
     private String videoId;
+    private SongProviderEnum songProvider;
 
 	public static List<SongGetDto> fromSongs(Set<Song> songs) {
         List<SongGetDto> songGetDtos = new ArrayList<>();
@@ -32,6 +33,7 @@ public class SongGetDto {
                 .thumbnailUrlLow(song.getThumbnailUrlLow())
                 .thumbnailUrlMedium(song.getThumbnailUrlMedium())
                 .videoId(song.getId())
+                .songProvider(song.getSongProviderEnum())
                 .build();
     }
 
@@ -42,6 +44,7 @@ public class SongGetDto {
                 .thumbnailUrlLow(tracksSpotify.getAlbum().getImages().get(numberOfImages - 1).getUrl())
                 .thumbnailUrlMedium(tracksSpotify.getAlbum().getImages().get(numberOfImages > 1 ? numberOfImages - 2 : 0).getUrl())
                 .videoId(tracksSpotify.getId())
+                .songProvider(SongProviderEnum.SPOTIFY)
                 .build();
     }
 

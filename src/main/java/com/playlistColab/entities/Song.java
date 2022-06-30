@@ -2,12 +2,15 @@ package com.playlistColab.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.playlistColab.dtos.SongGetDto;
+import com.playlistColab.dtos.SongProviderEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,12 +40,16 @@ public class Song {
 	@Size(max = 255, min = 1)
     private String thumbnailUrlMedium;
 
+	@Enumerated(EnumType.STRING)
+	private SongProviderEnum songProviderEnum;
+
     public static Song fromSongDto(SongGetDto songdto) {
         return Song.builder()
 				.id(songdto.getVideoId())
 				.title(songdto.getTitle())
 				.thumbnailUrlLow(songdto.getThumbnailUrlLow())
 				.thumbnailUrlMedium(songdto.getThumbnailUrlMedium())
+				.songProviderEnum(songdto.getSongProvider())
 				.build();
     }
 }
