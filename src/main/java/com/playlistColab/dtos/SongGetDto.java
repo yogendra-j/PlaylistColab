@@ -21,6 +21,7 @@ public class SongGetDto {
     private String thumbnailUrlMedium;
     private String videoId;
     private SongProviderEnum songProvider;
+    private String songQuery;
 
 	public static List<SongGetDto> fromSongs(Set<Song> songs) {
         List<SongGetDto> songGetDtos = new ArrayList<>();
@@ -45,6 +46,7 @@ public class SongGetDto {
                 .thumbnailUrlMedium(tracksSpotify.getAlbum().getImages().get(numberOfImages > 1 ? numberOfImages - 2 : 0).getUrl())
                 .videoId(tracksSpotify.getId())
                 .songProvider(SongProviderEnum.SPOTIFY)
+                .songQuery(tracksSpotify.getName() + " " + tracksSpotify.getArtists().get(0).getName())
                 .build();
     }
 
