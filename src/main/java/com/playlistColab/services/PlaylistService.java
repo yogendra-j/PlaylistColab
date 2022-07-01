@@ -80,4 +80,13 @@ public class PlaylistService {
 
 	}
 
+	public void deleteSongFromPlaylist(long playlistId, String songId, String userName) {
+		Playlist playlist = findById(playlistId);
+		if (!playlist.getUser().getEmail().equals(userName)) {
+			throw new ResourceNotFoundException("Playlist with id " + playlistId + " is not editable by user " + userName + ".");
+		}
+		playlist.getSongs().removeIf(song -> song.getId().equals(songId));
+		playlistRepository.save(playlist);
+	}
+
 }
