@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.playlistColab.dtos.SongGetDto;
 import com.playlistColab.dtos.youtubeSongDto;
 import com.playlistColab.dtos.youtubeSongsResult;
+import com.playlistColab.entities.Song;
 import com.playlistColab.exceptions.ResourceNotFoundException;
 
 @Service
@@ -75,5 +76,39 @@ public class youtubeService {
 
         return allSongs;
 
+    }
+
+    public SongGetDto convertSpotifySongToYoutube(String songQuery) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(youtubeApiBaseUrl + "/playlistItems")
+                .queryParam("key", "{key}")
+                .queryParam("part", "{part}")
+                .queryParam("maxResults", "{maxResults}")
+                .queryParam("q", "{q}")
+                .encode()
+                .toUriString();
+
+        Map<String, String> params = new HashMap<>();
+        params.put("key", youtubeApiKey);
+        params.put("part", "snippet");
+        params.put("maxResults", "1");
+        params.put("q", songQuery);
+        ResponseEntity<youtubeSongsResult> response = restTemplate.exchange(
+                    urlTemplate,
+                    HttpMethod.GET,
+                    entity,
+                    youtubeSongsResult.class,
+                    params);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new ResourceNotFoundException("Cannot get song with query " + songQuery);
+            }
+            
+            youtubeSongsResult result = response.getBody();
+            return (result.getSongs().stream()
+            .map(youtubeSongDto::toSongGetDto)
+            .collect(Collectors.toList())).get(0);
     }
 }

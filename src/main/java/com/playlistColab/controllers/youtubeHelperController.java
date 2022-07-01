@@ -17,4 +17,10 @@ public class youtubeHelperController {
         
         return ResponseEntity.ok(youtubeService.getSongsList(playlistId));
     }
+
+    @GetMapping("/youtube/spotify/{spotifySongQuery}")
+    public ResponseEntity<?> convertSpotifySongToYoutube(@PathVariable("spotifySongQuery") String spotifySongQuery) {
+            
+            return ResponseEntity.ok(youtubeService.convertSpotifySongToYoutube(spotifySongQuery));        
+    }
 }
