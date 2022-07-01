@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.playlistColab.dtos.SongGetDto;
+import com.playlistColab.dtos.YoutubeSearchResult;
+import com.playlistColab.dtos.youtubeSearchSongDto;
 import com.playlistColab.dtos.youtubeSongDto;
 import com.playlistColab.dtos.youtubeSongsResult;
 import com.playlistColab.entities.Song;
@@ -83,11 +85,13 @@ public class youtubeService {
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        String urlTemplate = UriComponentsBuilder.fromHttpUrl(youtubeApiBaseUrl + "/playlistItems")
+        String urlTemplate = UriComponentsBuilder.fromHttpUrl(youtubeApiBaseUrl + "/search")
                 .queryParam("key", "{key}")
                 .queryParam("part", "{part}")
                 .queryParam("maxResults", "{maxResults}")
                 .queryParam("q", "{q}")
+                .queryParam("order", "{order}")
+                .queryParam("type", "{type}")
                 .encode()
                 .toUriString();
 
@@ -95,20 +99,22 @@ public class youtubeService {
         params.put("key", youtubeApiKey);
         params.put("part", "snippet");
         params.put("maxResults", "1");
+        params.put("order", "relevance");
+        params.put("type", "video");
         params.put("q", songQuery);
-        ResponseEntity<youtubeSongsResult> response = restTemplate.exchange(
+        ResponseEntity<YoutubeSearchResult> response = restTemplate.exchange(
                     urlTemplate,
                     HttpMethod.GET,
                     entity,
-                    youtubeSongsResult.class,
+                    YoutubeSearchResult.class,
                     params);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new ResourceNotFoundException("Cannot get song with query " + songQuery);
             }
             
-            youtubeSongsResult result = response.getBody();
+            YoutubeSearchResult result = response.getBody();
             return (result.getSongs().stream()
-            .map(youtubeSongDto::toSongGetDto)
+            .map(youtubeSearchSongDto::toSongGetDto)
             .collect(Collectors.toList())).get(0);
     }
 }

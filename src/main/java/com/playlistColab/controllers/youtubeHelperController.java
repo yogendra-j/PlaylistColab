@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.playlistColab.services.youtubeService;
@@ -18,8 +19,8 @@ public class youtubeHelperController {
         return ResponseEntity.ok(youtubeService.getSongsList(playlistId));
     }
 
-    @GetMapping("/youtube/spotify/{spotifySongQuery}")
-    public ResponseEntity<?> convertSpotifySongToYoutube(@PathVariable("spotifySongQuery") String spotifySongQuery) {
+    @GetMapping("/youtube/spotify")
+    public ResponseEntity<?> convertSpotifySongToYoutube(@RequestParam("spotifySongQuery") String spotifySongQuery) {
             
             return ResponseEntity.ok(youtubeService.convertSpotifySongToYoutube(spotifySongQuery));        
     }
