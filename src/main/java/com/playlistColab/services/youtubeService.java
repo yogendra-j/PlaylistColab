@@ -1,9 +1,12 @@
 package com.playlistColab.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,8 +33,16 @@ import com.playlistColab.exceptions.ResourceNotFoundException;
 
 @Service
 public class YoutubeService {
-    @Value("${youtube.api.key}")
+    @Value("${youtube.api.key1}")
     private String youtubeApiKey;
+    @Value("${youtube.api.key2}")
+    private String youtubeApiKey2;
+    @Value("${youtube.api.key3}")
+    private String youtubeApiKey3;
+    @Value("${youtube.api.key4}")
+    private String youtubeApiKey4;
+    @Value("${youtube.api.key5}")
+    private String youtubeApiKey5;
     @Value("${google.clientId}")
     private String googleClientId;
     @Value("${google.clientSecret}")
@@ -90,9 +102,12 @@ public class YoutubeService {
 
     }
 
-    public SongGetDto convertSpotifySongToYoutube(String songQuery) {
+    @Async
+    public CompletableFuture<SongGetDto> convertSpotifySongToYoutube(String songQuery, String username) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+        // String auth = getAccessToken(username).getAccessToken();
+        // headers.set("Authorization", "Bearer " + auth);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(youtubeApiBaseUrl + "/search")
@@ -106,7 +121,7 @@ public class YoutubeService {
                 .toUriString();
 
         Map<String, String> params = new HashMap<>();
-        params.put("key", youtubeApiKey);
+        params.put("key", getRandomYoutubeApiKey());
         params.put("part", "snippet");
         params.put("maxResults", "1");
         params.put("order", "relevance");
@@ -123,9 +138,9 @@ public class YoutubeService {
         }
 
         YoutubeSearchResult result = response.getBody();
-        return (result.getSongs().stream()
+        return CompletableFuture.completedFuture((result.getSongs().stream()
                 .map(youtubeSearchSongDto::toSongGetDto)
-                .collect(Collectors.toList())).get(0);
+                .collect(Collectors.toList())).get(0));
     }
 
     public OAuthTokenDto getAccessToken(String code, String username) {
@@ -175,5 +190,11 @@ public class YoutubeService {
                 OAuthTokenDto.class);
         userService.saveGoogleRefreshedToken(response.getBody(), username);
         return response.getBody();
+    }
+
+    public String getRandomYoutubeApiKey() {
+        List<String> keyPool = new ArrayList<>(Arrays.asList(youtubeApiKey3, youtubeApiKey4, youtubeApiKey5));
+        int randomIndex = new Random().nextInt(keyPool.size());
+        return keyPool.get(0);
     }
 }

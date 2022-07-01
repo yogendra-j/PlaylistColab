@@ -2,9 +2,12 @@ package com.playlistColab.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.playlistColab.dtos.AddSongDto;
@@ -48,32 +51,33 @@ public class PlaylistService {
 		playlistRepository.deleteById(playlistId);
 	}
 
-	public Playlist addSongToPlaylist(long playlistId, AddSongDto addSongDto) {
-		addSongDto.setSongs(convertAllToYoutube(addSongDto.getSongs()));
+	public Playlist addSongToPlaylist(long playlistId, AddSongDto addSongDto, String username) {
+		addSongDto.setSongs(convertAllToYoutube(addSongDto.getSongs(), username));
 		List<Song> songsInDb = songRepository
 				.findAllById(addSongDto.getSongs().stream().map(s -> s.getVideoId()).collect(Collectors.toList()));
 		List<Song> songsNeededToAddInDb = addSongDto.getSongs().stream().filter(songdto -> !songsInDb.stream()
 				.anyMatch(song -> song.getId().equals(songdto.getVideoId()))).map(songdto -> Song.fromSongDto(songdto))
 				.collect(Collectors.toList());
 		songsInDb.addAll(songRepository.saveAllAndFlush(songsNeededToAddInDb)); //now all songs available in db
-		// Set<Song> songsInPlaylist = new HashSet<>();
-		// songsInPlaylist.addAll(songsInDb);
-		// songsInPlaylist.addAll(songRepository.findSongsByPlaylistsId(playlistId));
 		Playlist playlist = findById(playlistId);
 		playlist.getSongs().addAll(songsInDb);
 		return playlistRepository.save(playlist);
 	}
 
-	public List<SongGetDto> convertAllToYoutube(List<SongGetDto> songs){
-		List<SongGetDto> result = new ArrayList<>();
+	public List<SongGetDto> convertAllToYoutube(List<SongGetDto> songs, String username){
+		List<CompletableFuture<SongGetDto>> completableFutures = new ArrayList<>();
 		songs.forEach(song -> {
 			if (song.getSongProvider() == SongProviderEnum.YOUTUBE){
-				result.add(song);
+				completableFutures.add(CompletableFuture.supplyAsync(() -> song));
 			} else {
-				result.add(youtubeService.convertSpotifySongToYoutube(song.getSongQuery()));
+				
+				completableFutures.add(youtubeService.convertSpotifySongToYoutube(song.getSongQuery(), username));
 			}
 		});
-		return result;
+		return completableFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+
+
+
 	}
 
 }

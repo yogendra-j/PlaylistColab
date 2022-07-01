@@ -89,10 +89,10 @@ public class playlistController {
     }
 
     @PostMapping(value = "/playlists/{id}/songs", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addSongsToPlaylist(@PathVariable long id, @Valid @RequestBody AddSongDto songsList) {
+    public ResponseEntity<?> addSongsToPlaylist(@PathVariable long id, @Valid @RequestBody AddSongDto songsList, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("saving songs in playlist with id {}", id);
         log.info("saving songs {}", songsList);
-        Playlist playlist = playlistService.addSongToPlaylist(id, songsList);
+        Playlist playlist = playlistService.addSongToPlaylist(id, songsList, userDetails.getUsername());
         PlaylistGetDto result = PlaylistGetDto.fromPlaylist(playlist);
         result.setSongs(playlist.getSongs().stream()
                 .map(SongGetDto::fromSong)
