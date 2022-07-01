@@ -20,11 +20,12 @@ import com.playlistColab.dtos.ApiResponse;
 import com.playlistColab.dtos.JwtAuthenticationResponse;
 import com.playlistColab.dtos.LoginRequest;
 import com.playlistColab.dtos.SignUpRequest;
-import com.playlistColab.dtos.SpotifyTokenDto;
+import com.playlistColab.dtos.OAuthTokenDto;
 import com.playlistColab.entities.User;
 import com.playlistColab.services.GoogleService;
 import com.playlistColab.services.SpotifyService;
 import com.playlistColab.services.UserService;
+import com.playlistColab.services.YoutubeService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +36,7 @@ public class AuthController {
     @Autowired private UserService userService;
     @Autowired private GoogleService googleService;
     @Autowired private SpotifyService soptifyService;
+    @Autowired private YoutubeService youtubeService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -74,7 +76,7 @@ public class AuthController {
     @PostMapping(value = "/spotify/accesstoken", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccessToken(@RequestParam String code, @AuthenticationPrincipal UserDetails userDetails) {
         log.info("get access token {}", code);
-        SpotifyTokenDto accessToken = soptifyService.getAccessToken(code, userDetails.getUsername());
+        OAuthTokenDto accessToken = soptifyService.getAccessToken(code, userDetails.getUsername());
         accessToken.setRefreshToken(null);
         accessToken.setExpiresIn(System.currentTimeMillis() + accessToken.getExpiresIn() * 1000);
         return ResponseEntity.ok(accessToken);
@@ -83,7 +85,24 @@ public class AuthController {
     @GetMapping(value = "/spotify/accesstoken", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getAccessToken(@AuthenticationPrincipal UserDetails userDetails) {
         log.info("get access token for user {}", userDetails.getUsername());
-        SpotifyTokenDto accessToken = soptifyService.getAccessToken(userDetails.getUsername());
+        OAuthTokenDto accessToken = soptifyService.getAccessToken(userDetails.getUsername());
+        accessToken.setRefreshToken(null);
+        return ResponseEntity.ok(accessToken);
+    }
+
+    @PostMapping(value = "/youtube/accesstoken", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getGoogleAccessToken(@RequestParam String code, @AuthenticationPrincipal UserDetails userDetails) {
+        log.info("get access token {}", code);
+        OAuthTokenDto accessToken = youtubeService.getAccessToken(code, userDetails.getUsername());
+        accessToken.setRefreshToken(null);
+        accessToken.setExpiresIn(System.currentTimeMillis() + accessToken.getExpiresIn() * 1000);
+        return ResponseEntity.ok(accessToken);
+    }
+
+    @GetMapping(value = "/youtube/accesstoken", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getGoogleAccessToken(@AuthenticationPrincipal UserDetails userDetails) {
+        log.info("get access token for user {}", userDetails.getUsername());
+        OAuthTokenDto accessToken = youtubeService.getAccessToken(userDetails.getUsername());
         accessToken.setRefreshToken(null);
         return ResponseEntity.ok(accessToken);
     }

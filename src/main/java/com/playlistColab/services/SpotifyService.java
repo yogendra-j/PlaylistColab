@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.playlistColab.dtos.SongGetDto;
 import com.playlistColab.dtos.SpotifyPlaylistDto;
-import com.playlistColab.dtos.SpotifyTokenDto;
+import com.playlistColab.dtos.OAuthTokenDto;
 import com.playlistColab.dtos.TracksSpotify;
 import com.playlistColab.entities.User;
 
@@ -39,7 +39,7 @@ public class SpotifyService {
     @Autowired private RestTemplate restTemplate;
 
     //get access token and refresh token from code
-    public SpotifyTokenDto getAccessToken(String code, String username) {
+    public OAuthTokenDto getAccessToken(String code, String username) {
         String access_token_url = spotifyAuthUrl + "/api/token";
         String body = "grant_type=authorization_code&code=" + code + "&redirect_uri=http://localhost:4200/login/spotify";
         String auth = spotifyClientId + ":" + spotifyClientSecret;
@@ -49,17 +49,17 @@ public class SpotifyService {
         headers.set("Authorization", authHeader);
         headers.set("Content-Type", "application/x-www-form-urlencoded");
         HttpEntity<String> request = new HttpEntity<>(body, headers);
-        ResponseEntity<SpotifyTokenDto> response = restTemplate.postForEntity(access_token_url, request, SpotifyTokenDto.class);
+        ResponseEntity<OAuthTokenDto> response = restTemplate.postForEntity(access_token_url, request, OAuthTokenDto.class);
         userService.saveSpotifyToken(response.getBody(), username);
         return response.getBody();
     }
 
     //get spotify token from db by username
-    public SpotifyTokenDto getAccessToken(String username) {
+    public OAuthTokenDto getAccessToken(String username) {
         User user =  userService.findByUsername(username).orElseThrow(() -> {
             throw new IllegalArgumentException("user not found");
         });
-        SpotifyTokenDto token =  SpotifyTokenDto.builder()
+        OAuthTokenDto token =  OAuthTokenDto.builder()
                 .accessToken(user.getSpotifyAccessToken())
                 .expiresIn(user.getSpotifyAccessTokenExpiration())
                 .build();
@@ -70,7 +70,7 @@ public class SpotifyService {
         return token;
     }
 
-    private SpotifyTokenDto getRefreshedToken(String spotifyRefreshToken, String username) {
+    private OAuthTokenDto getRefreshedToken(String spotifyRefreshToken, String username) {
         String refresh_token_url = spotifyAuthUrl + "/api/token";
         String body = "grant_type=refresh_token&refresh_token=" + spotifyRefreshToken;
         String auth = spotifyClientId + ":" + spotifyClientSecret;
@@ -80,8 +80,8 @@ public class SpotifyService {
         headers.set("Authorization", authHeader);
         headers.set("Content-Type", "application/x-www-form-urlencoded");
         HttpEntity<String> request = new HttpEntity<>(body, headers);
-        ResponseEntity<SpotifyTokenDto> response = restTemplate.postForEntity(refresh_token_url, request, SpotifyTokenDto.class);
-        userService.saveSpotifyToken(response.getBody(), username);
+        ResponseEntity<OAuthTokenDto> response = restTemplate.postForEntity(refresh_token_url, request, OAuthTokenDto.class);
+        userService.saveSpotifyRefreshedToken(response.getBody(), username);
         return response.getBody();
     }
 

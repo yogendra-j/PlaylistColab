@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SpotifyTokenDto {
+public class OAuthTokenDto {
     @JsonProperty("access_token")
     private String accessToken;
     @JsonIgnore

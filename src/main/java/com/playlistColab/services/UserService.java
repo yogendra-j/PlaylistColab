@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.playlistColab.dtos.JwtAuthenticationResponse;
-import com.playlistColab.dtos.SpotifyTokenDto;
+import com.playlistColab.dtos.OAuthTokenDto;
 import com.playlistColab.entities.User;
 import com.playlistColab.exceptions.ItemExistsException;
 import com.playlistColab.exceptions.ResourceNotFoundException;
@@ -81,12 +81,37 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public void saveSpotifyToken(SpotifyTokenDto tokenInfo, String userName) {
+    public void saveSpotifyToken(OAuthTokenDto tokenInfo, String userName) {
         User user = findByUsername(userName)
                 .orElseThrow(() -> new ResourceNotFoundException("User with username" + userName + "not found"));
         user.setSpotifyAccessToken(tokenInfo.getAccessToken());
         user.setSpotifyAccessTokenExpiration(System.currentTimeMillis() + tokenInfo.getExpiresIn() * 1000);
         user.setSpotifyRefreshToken(tokenInfo.getRefreshToken());
+        userRepository.save(user);
+    }
+
+    public void saveSpotifyRefreshedToken(OAuthTokenDto tokenInfo, String userName) {
+        User user = findByUsername(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username" + userName + "not found"));
+        user.setSpotifyAccessToken(tokenInfo.getAccessToken());
+        user.setSpotifyAccessTokenExpiration(System.currentTimeMillis() + tokenInfo.getExpiresIn() * 1000);
+        userRepository.save(user);
+    }
+
+    public void saveGoogleToken(OAuthTokenDto tokenInfo, String userName) {
+        User user = findByUsername(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username" + userName + "not found"));
+        user.setGoogleAccessToken(tokenInfo.getAccessToken());
+        user.setGoogleAccessTokenExpiration(System.currentTimeMillis() + tokenInfo.getExpiresIn() * 1000);
+        user.setGoogleRefreshToken(tokenInfo.getRefreshToken());
+        userRepository.save(user);
+    }
+
+    public void saveGoogleRefreshedToken(OAuthTokenDto tokenInfo, String userName) {
+        User user = findByUsername(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User with username" + userName + "not found"));
+        user.setGoogleAccessToken(tokenInfo.getAccessToken());
+        user.setGoogleAccessTokenExpiration(System.currentTimeMillis() + tokenInfo.getExpiresIn() * 1000);
         userRepository.save(user);
     }
 }

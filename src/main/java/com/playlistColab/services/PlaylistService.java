@@ -1,5 +1,6 @@
 package com.playlistColab.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.playlistColab.dtos.AddSongDto;
+import com.playlistColab.dtos.SongGetDto;
+import com.playlistColab.dtos.SongProviderEnum;
 import com.playlistColab.entities.Playlist;
 import com.playlistColab.entities.Song;
 import com.playlistColab.entities.User;
@@ -20,6 +23,8 @@ public class PlaylistService {
 	PlaylistRepository playlistRepository;
 	@Autowired
 	SongRepository songRepository;
+	@Autowired
+	YoutubeService youtubeService; 
 
 	public long createPlaylist(String playlistName, long userId) {
 		Playlist playlist = Playlist
@@ -44,6 +49,7 @@ public class PlaylistService {
 	}
 
 	public Playlist addSongToPlaylist(long playlistId, AddSongDto addSongDto) {
+		addSongDto.setSongs(convertAllToYoutube(addSongDto.getSongs()));
 		List<Song> songsInDb = songRepository
 				.findAllById(addSongDto.getSongs().stream().map(s -> s.getVideoId()).collect(Collectors.toList()));
 		List<Song> songsNeededToAddInDb = addSongDto.getSongs().stream().filter(songdto -> !songsInDb.stream()
@@ -56,6 +62,18 @@ public class PlaylistService {
 		Playlist playlist = findById(playlistId);
 		playlist.getSongs().addAll(songsInDb);
 		return playlistRepository.save(playlist);
+	}
+
+	public List<SongGetDto> convertAllToYoutube(List<SongGetDto> songs){
+		List<SongGetDto> result = new ArrayList<>();
+		songs.forEach(song -> {
+			if (song.getSongProvider() == SongProviderEnum.YOUTUBE){
+				result.add(song);
+			} else {
+				result.add(youtubeService.convertSpotifySongToYoutube(song.getSongQuery()));
+			}
+		});
+		return result;
 	}
 
 }

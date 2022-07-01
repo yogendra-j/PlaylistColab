@@ -51,11 +51,18 @@ public class User {
 	@JsonIgnore
 	private String spotifyRefreshToken;
 
-	@Size(max = 255)
-	@JsonIgnore
-	private String spotifyId;
-
 	@JsonIgnore
 	private long spotifyAccessTokenExpiration;
+
+	@Size(max = 255)
+	@JsonIgnore
+	private String googleAccessToken;
+
+	@Size(max = 255)
+	@JsonIgnore
+	private String googleRefreshToken;
+
+	@JsonIgnore
+	private long googleAccessTokenExpiration;
 
 }
