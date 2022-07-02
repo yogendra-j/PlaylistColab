@@ -195,6 +195,6 @@ public class YoutubeService {
     public String getRandomYoutubeApiKey() {
         List<String> keyPool = new ArrayList<>(Arrays.asList(youtubeApiKey3, youtubeApiKey4, youtubeApiKey5));
         int randomIndex = new Random().nextInt(keyPool.size());
-        return keyPool.get(0);
+        return keyPool.get(randomIndex);
     }
 }
