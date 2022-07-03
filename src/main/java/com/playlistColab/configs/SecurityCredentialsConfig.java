@@ -70,8 +70,11 @@ public class SecurityCredentialsConfig{
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://playlistcolab.me");
+        config.addAllowedOrigin("https://playlistcolab.me");
+        config.addAllowedOrigin("https://playlistcolab.me");
         config.addAllowedOrigin("https://playlistcolab-angular.herokuapp.com");
-        config.addAllowedOrigin("http://playlistcolab-angular.s3-website.ap-south-1.amazonaws.com/");
+        config.addAllowedOrigin("http://playlistcolab.me.s3-website.ap-south-1.amazonaws.com");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
